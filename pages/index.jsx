@@ -1,6 +1,76 @@
 import styled from "styled-components";
 import { Routes } from "@config/routes";
 import { useState } from "react";
+import axios from "axios";
+
+const DATA_ENDPOINT = "https://prolog-api.profy.dev/content-page/home";
+
+const IssuesPage = () => {
+  const [data, setData] = useState(null);
+  axios
+    .get(DATA_ENDPOINT)
+    .then((response) => setData(response?.data))
+    .catch((error) => console.log(error));
+
+  const [isOpen, setIsOpen] = useState(false);
+  // https://profy.dev/rjs-challenge-modal
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const ContactModal = () => {
+    const emailLink = `mailto:"prolog@profy.dev"`;
+    return (
+      <ModalContainer>
+        <ModalCard>
+          <ModalHeader>Contact Us Via Email</ModalHeader>
+          <ModalBody>
+            Any questions? Send us an email at prolog@profy.dev. We usually
+            answer within 24 hours.
+          </ModalBody>
+          <ButtonContainer>
+            <CancelButton onClick={toggleModal}>Cancel</CancelButton>
+            <PrimaryButton href={emailLink}>Open Email App</PrimaryButton>
+          </ButtonContainer>
+        </ModalCard>
+      </ModalContainer>
+    );
+  };
+
+  return (
+    <div>
+      <Header>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/logo-large.svg" alt="Prolog logo" />
+        <LinksContainer>
+          <HeaderLink href="/">Home</HeaderLink>
+          <HeaderLink href="/products">Products</HeaderLink>
+          <HeaderLink href="/docuentation">Documentation</HeaderLink>
+          <HeaderLink href="pricing">Pricing</HeaderLink>
+        </LinksContainer>
+        <PrimaryButton href="/projects">Open Dashboard</PrimaryButton>
+      </Header>
+      <>
+        {data ? (
+          <>
+            <div>{data.meta.title}</div>
+            <div>{data.meta.description}</div>
+            <div>{JSON.stringify(Object.values(data))}</div>
+          </>
+        ) : (
+          "Loading"
+        )}
+      </>
+      <ContactButton onClick={toggleModal}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/message.svg" alt="Contact" />
+      </ContactButton>
+      {isOpen && <ContactModal />}
+    </div>
+  );
+};
+
+export default IssuesPage;
 
 const Header = styled.header`
   width: 100%;
@@ -120,53 +190,3 @@ const ButtonContainer = styled.div`
   flex-direction: row;
   gap: 18px;
 `;
-
-const IssuesPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  // https://profy.dev/rjs-challenge-modal
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const ContactModal = () => {
-    const emailLink = `mailto:"prolog@profy.dev"`;
-    return (
-      <ModalContainer>
-        <ModalCard>
-          <ModalHeader>Contact Us Via Email</ModalHeader>
-          <ModalBody>
-            Any questions? Send us an email at prolog@profy.dev. We usually
-            answer within 24 hours.
-          </ModalBody>
-          <ButtonContainer>
-            <CancelButton onClick={toggleModal}>Cancel</CancelButton>
-            <PrimaryButton href={emailLink}>Open Email App</PrimaryButton>
-          </ButtonContainer>
-        </ModalCard>
-      </ModalContainer>
-    );
-  };
-
-  return (
-    <div>
-      <Header>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/logo-large.svg" alt="Prolog logo" />
-        <LinksContainer>
-          <HeaderLink href="/">Home</HeaderLink>
-          <HeaderLink href="/products">Products</HeaderLink>
-          <HeaderLink href="/docuentation">Documentation</HeaderLink>
-          <HeaderLink href="pricing">Pricing</HeaderLink>
-        </LinksContainer>
-        <PrimaryButton href="/projects">Open Dashboard</PrimaryButton>
-      </Header>
-      <ContactButton onClick={toggleModal}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/message.svg" alt="Contact" />
-      </ContactButton>
-      {isOpen && <ContactModal />}
-    </div>
-  );
-};
-
-export default IssuesPage;
